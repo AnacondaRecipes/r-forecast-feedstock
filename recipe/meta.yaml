@@ -1,4 +1,4 @@
-{% set version = '8.0' %}
+{% set version = '8.2' %}
 
 {% set posix = 'm2-' if win else '' %}
 {% set native = 'm2w64-' if win else '' %}
@@ -12,18 +12,32 @@ source:
   url:
     - https://cran.r-project.org/src/contrib/forecast_{{ version }}.tar.gz
     - https://cran.r-project.org/src/contrib/Archive/forecast/forecast_{{ version }}.tar.gz
-  sha256: 75456318b8a202bfb3780ccfa24ab0d7264e96c6788fd14e01622fbf8556ad42
+  sha256: eb3fab64ed139d068e7d026cd3880f1b623f4153a832fb71845488fa75e8b812
+
+
+  # patches:
+   # List any patch files here
+   # - fix.patch
 
 build:
+  # If this is a new build for the same version, increment the build number.
   number: 0
-  skip: true  # [win32]
+
+  # This is required to make R link correctly on Linux.
   rpaths:
     - lib/R/lib/
     - lib/
 
+# Suggests: testthat, knitr, rmarkdown, expsmooth, rticles
 requirements:
   build:
     - r-base
+    - {{ compiler('c') }}        # [not win]
+    - {{ compiler('cxx') }}      # [not win]
+    - {{ compiler('fortran') }}  # [not win]
+    - {{native}}toolchain        # [win]
+    - {{posix}}filesystem        # [win]
+    - {{posix}}make
     - r-rcpp >=0.11.0
     - r-rcpparmadillo >=0.2.35
     - r-colorspace
@@ -35,12 +49,10 @@ requirements:
     - r-timedate
     - r-tseries
     - r-zoo
-    - posix                # [win]
-    - {{native}}toolchain  # [win]
-    - gcc                  # [not win]
 
   run:
     - r-base
+    - {{native}}gcc-libs         # [win]
     - r-rcpp >=0.11.0
     - r-rcpparmadillo >=0.2.35
     - r-colorspace
@@ -52,16 +64,22 @@ requirements:
     - r-timedate
     - r-tseries
     - r-zoo
-    - libgcc  # [not win]
 
 test:
   commands:
-    - $R -e "library('forecast')"  # [not win]
+    # You can put additional test commands to be run here.
+    - $R -e "library('forecast')"           # [not win]
     - "\"%R%\" -e \"library('forecast')\""  # [win]
 
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
 about:
-  home: http://github.com/robjhyndman/forecast
-  license: GPL (>= 2)
+  home: http://pkg.robjhyndman.com/forecast, https://github.com/robjhyndman/forecast
+  license: GPL-3
   summary: Methods and tools for displaying and analysing univariate time series forecasts including
     exponential smoothing via state space models and automatic ARIMA modelling.
   license_family: GPL3
@@ -70,3 +88,33 @@ extra:
   recipe-maintainers:
     - johanneskoester
     - bgruening
+    - mingwandroid
+
+# The original CRAN metadata for this package was:
+
+# Package: forecast
+# Version: 8.2
+# Title: Forecasting Functions for Time Series and Linear Models
+# Description: Methods and tools for displaying and analysing univariate time series forecasts including exponential smoothing via state space models and automatic ARIMA modelling.
+# Depends: R (>= 3.0.2),
+# Imports: stats, graphics, tseries, fracdiff, Rcpp (>= 0.11.0), nnet, colorspace, parallel, ggplot2 (>= 2.0.0), magrittr, lmtest, zoo, timeDate
+# Suggests: testthat, knitr, rmarkdown, expsmooth, rticles
+# LinkingTo: Rcpp (>= 0.11.0), RcppArmadillo (>= 0.2.35)
+# LazyData: yes
+# ByteCompile: TRUE
+# Authors@R: c( person("Rob", "Hyndman", email="Rob.Hyndman@monash.edu", role=c("aut", "cre", "cph")), person("Mitchell", "O'Hara-Wild", role="aut"), person("Christoph", "Bergmeir", role="aut"), person("Slava", "Razbash", role="aut"), person("Earo", "Wang", role="aut") )
+# BugReports: https://github.com/robjhyndman/forecast/issues
+# License: GPL-3
+# URL: http://pkg.robjhyndman.com/forecast, https://github.com/robjhyndman/forecast
+# VignetteBuilder: knitr
+# RoxygenNote: 6.0.1.9000
+# NeedsCompilation: yes
+# Packaged: 2017-09-25 01:25:04 UTC; hyndman
+# Author: Rob Hyndman [aut, cre, cph], Mitchell O'Hara-Wild [aut], Christoph Bergmeir [aut], Slava Razbash [aut], Earo Wang [aut]
+# Maintainer: Rob Hyndman <Rob.Hyndman@monash.edu>
+# Repository: CRAN
+# Date/Publication: 2017-09-25 18:12:34 UTC
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml
