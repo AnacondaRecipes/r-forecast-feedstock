@@ -10,8 +10,8 @@ package:
 source:
   fn: forecast_{{ version }}.tar.gz
   url:
-    - https://cran.r-project.org/src/contrib/forecast_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/forecast/forecast_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/forecast_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/forecast/forecast_{{ version }}.tar.gz
   sha256: eb3fab64ed139d068e7d026cd3880f1b623f4153a832fb71845488fa75e8b812
 
 
