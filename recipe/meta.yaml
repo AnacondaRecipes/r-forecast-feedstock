@@ -65,6 +65,8 @@ requirements:
     - r-urca
     - r-uroot
     - r-zoo
+    - libopenblas  # [osx]
+
 
 test:
   commands:
